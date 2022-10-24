@@ -1,0 +1,1 @@
+#Her starter vi med et gæt og så vil weiszfeld's algoritme finde den faktiske optimale placering af X.
