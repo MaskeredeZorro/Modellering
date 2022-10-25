@@ -53,7 +53,7 @@ def buildModel(data: dict) -> pyomo.ConcreteModel():
     model.s = pyomo.Var(model.products, model.periods_and_zero, within=pyomo.NonNegativeIntegers)
 
     # Add objective function
-    model.obj = pyomo.Objective(expr=sum(model.p[k][t]*model.batch[k]*model.x[k, t] + model.q[k][t]*model.y[k, t] + model.h[k][t]*model.s[k, t] for k in model.products for t in model.periods))
+    model.obj=pyomo.Objective(expr=sum(model.p[k][t]*model.batch[k]*model.x[k,t]+model.q[k][t]*model.y[k,t]+model.h[k][t]*model.s[k,t] for k in model.products for t in model.periods))
     # Fix past x-variables to zero
     for k in model.products:
         model.x[k, -2].fix(0)
@@ -75,16 +75,12 @@ def buildModel(data: dict) -> pyomo.ConcreteModel():
         model.sharedResources.add(expr=sum(model.lagerForbrug[k]*model.s[k, t] for k in model.products) <= data['max_inv'])
     # Fix the primo inventory
     for k in model.products:
-    #    model.x[k,-2].fix(0) #Dette er fiksering af variabler. Her bestemmer vi fx at der SKAL lægge et sygehus i Viborg. Så ville vi fiksere en enkelt værdi af x, til at være lig med liste-indekset for Viborg.
-    #    model.x[k,-1].fix(0)
         model.s[k, -1].fix(model.primoInv[k])
     return model
 
 def solveModel(model: pyomo.ConcreteModel()):
     # Define a solver
     solver = pyomo.SolverFactory('cplex')
-    GAP_VALUE = 0.07
-    solver.options['mipgap'] = GAP_VALUE
     # Solve the model
     solver.solve(model, tee=True)
 
