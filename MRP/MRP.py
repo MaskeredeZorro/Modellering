@@ -48,11 +48,7 @@ def buildModel(data: dict) -> pyomo.ConcreteModel():
     model.y = pyomo.Var(model.products, model.periods, within=pyomo.Binary)
     model.s = pyomo.Var(model.products, model.periods_and_zero, within=pyomo.NonNegativeIntegers)
     # Add objective function
-    model.obj = pyomo.Objective(
-        expr=sum(model.p[k][t]*model.batch[k]*model.x[k, t]
-                 + model.q[k][t]*model.y[k, t]
-                 + model.h[k][t]*model.s[k, t] for k in model.products for t in model.periods)
-    )
+    model.obj = pyomo.Objective(expr=sum(model.p[k][t]*model.batch[k]*model.x[k, t]+ model.q[k][t]*model.y[k, t]+ model.h[k][t]*model.s[k, t] for k in model.products for t in model.periods))
     # Fix past x-variables to zero
     for k in model.products:
         model.x[k, -2].fix(0)

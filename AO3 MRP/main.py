@@ -42,8 +42,9 @@ def buildModel(data: dict) -> pyomo.ConcreteModel():
     model.primoInv = data['primoInventory']
     model.leadTime = data['leadTimes']
     model.r = data['r']
-    model.bigM = [data['max_prod']/model.batch[k] for k in model.products]
     model.maxInv=data["max_inv"]
+    model.maxProd=data["max_prod"]
+    model.bigM = [model.maxProd/model.batch[k] for k in model.products]
     model.lagerForbrug=data["lager_forbrug"]
     model.prodCapForbrug=data["Produktionskap_forbrug"]
     # Add variables to the model
@@ -136,5 +137,5 @@ def main(filename: str):
 
 
 if __name__ == '__main__':
-    filename = 'mrpDataFile'
+    filename = 'MRPdatafile'
     main(filename)
