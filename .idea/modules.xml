@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/AO3 MRP/.idea/AO3 MRP.iml" filepath="$PROJECT_DIR$/AO3 MRP/.idea/AO3 MRP.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/PycharmProjects.iml" filepath="$PROJECT_DIR$/.idea/PycharmProjects.iml" />
     </modules>
   </component>
