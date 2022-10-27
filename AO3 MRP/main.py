@@ -80,7 +80,7 @@ def buildModel(data: dict) -> pyomo.ConcreteModel():
 
 def solveModel(model: pyomo.ConcreteModel()):
     # Define a solver
-    solver = pyomo.SolverFactory('cplex')
+    solver = pyomo.SolverFactory('gurobi')
     # Solve the model
     solver.solve(model, tee=True)
 
@@ -111,13 +111,13 @@ def displaySolution(model: pyomo.ConcreteModel()):
         plt.xticks(pos + width / 2, model.period_labels)
         # Labels on axis
         plt.xlabel('Periods to plan')
-        plt.ylabel('Demand')
+        plt.ylabel(model.product_names[k])
         plt.legend()
 
 
     # Labels on axis
     plt.xlabel('Periods to plan')
-    plt.ylabel('Demand')
+    plt.ylabel(model.product_names[k])
     plt.legend()
 
 
