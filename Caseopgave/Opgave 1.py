@@ -15,8 +15,8 @@
 # Here y[i]=1 means a facility is opened at site i. x[i][j] gives the proportion of customer j's demand serviced from
 # site i
 # The readData(...) function uses the readAndWriteJson file to read data from a Json file in the form
-# "site_labels": [list of strings with labels for the sites. One for each site must be provided if any]
-# "customer_labels": [list of strings with labels for the customers. One for each site must be provided if any]
+# "antallokationer": [list of strings with labels for the sites. One for each site must be provided if any]
+# "antalkunder": [list of strings with labels for the customers. One for each site must be provided if any]
 # "v_costs": [list of lists with the variable costs matrix]
 # "f_costs": [list of fixed opening costs]
 # "demand": [list of demands - one for each customer]
@@ -27,6 +27,14 @@ import pyomo.environ as pyomo  # Used for modelling the IP
 import readAndWriteJson as rwJson  # Used to read data from Json file
 
 
+#Denne model er slet ikke robust, fordi vi anavender deterministisk data. Tjekkes resultaterne efter, så failer modellen 93% af gangene. Der er altså 93% sandsynlighed for, at den optimale løsning ikke holder, såfremt vi stresstester den / bruger den i virkeligheden
+#Vi kan tage højde for dette ved enten at sætte en fiktiv højere efterspørgsel hvilket er ensbetydende med at sætte en fiktiv lavere kapacitet
+#
+#
+#
+#
+#
+
 def readData(filename: str) -> dict:
     data = rwJson.readJsonFileToDictionary(filename)
     return data
@@ -36,54 +44,49 @@ def buildModel(data: dict) -> pyomo.ConcreteModel():
     # Define the model
     model = pyomo.ConcreteModel()
     # Copy data to the model
-    model.site_labels = data['site_labels']
-    model.customer_labels = data['customer_labels']
-    model.c = data['v_costs']
-    model.f = data['f_costs']
-    model.d = data['demand']
-    model.s = data['capacity']
-    model.sites = range(0, len(model.c))
-    model.customers = range(0, len(model.c[0]))
+    model.antallokationer = data['n']
+    model.antalkunder = data['m']
+    model.c = data['c']
+    model.f = data['f']
+    model.d = data['d']
+    model.s = data['s']
+    model.antallokationerlen = range(0, len(model.f))
+    model.antalkunderlen = range(0, len(model.c[0]))
     # Define x and y variables for the model
-    model.x = pyomo.Var(model.sites, model.customers, within=pyomo.Binary) #Ved NonNegativeReals og bounds er det kontinuert. Ved NonNegativeIntegers er det kun binær
-    model.y = pyomo.Var(model.sites, within=pyomo.Binary)
+    model.x = pyomo.Var(model.antallokationerlen, model.antalkunderlen, within=pyomo.Binary) #Ved NonNegativeReals og bounds er det kontinuert. Ved NonNegativeIntegers er det kun binær
+    model.y = pyomo.Var(model.antallokationerlen, within=pyomo.Binary)
     # Add the objective function to the model
     model.obj = pyomo.Objective(
-        expr=sum(model.c[i][j] * model.x[i, j] for i in model.sites for j in model.customers)
-                    + sum(model.f[i]*model.y[i] for i in model.sites))
+        expr=sum(model.c[i][j] * model.d[j] * model.x[i, j] for i in model.antallokationerlen for j in model.antalkunderlen)
+                    + sum(model.f[i]*model.y[i] for i in model.antallokationerlen))
     # Add the "sum to one"-constraints
     model.sumToOne = pyomo.ConstraintList()
-    for j in model.customers:
-        model.sumToOne.add(expr=sum(model.x[i, j] for i in model.sites) == 1)
+    for j in model.antalkunderlen:
+        model.sumToOne.add(expr=sum(model.x[i, j] for i in model.antallokationerlen) == 1)
     # Add the capacity constraints
     model.capacities = pyomo.ConstraintList()
-    for i in model.sites:
-        model.capacities.add(expr=sum(model.d[j]*model.x[i,j] for j in model.customers) <= model.s[i]*model.y[i])
-    # Add the "if x[i,j]==1 then y[i]=1" constraints
-    model.GUB = pyomo.ConstraintList()
-    for i in model.sites:
-        for j in model.customers:
-            model.GUB.add(expr=model.x[i, j] <= model.y[i])
+    for i in model.antallokationerlen:
+        model.capacities.add(expr=sum(model.d[j]*model.x[i,j] for j in model.antalkunderlen) <= model.s[i]*model.y[i])
+
     return model
 
 
 def solveModel(model: pyomo.ConcreteModel()):
     # Define a solver
-    solver = pyomo.SolverFactory('glpk')
+    solver = pyomo.SolverFactory('gurobi')
     # Solve the model
     solver.solve(model, tee=True)
-
 
 def displaySolution(model: pyomo.ConcreteModel()):
     # Print optimal objective function value
     print('Optimal objective function value is', pyomo.value(model.obj))
     # Print the open facilities
-    for i in model.sites:
+    for i in model.antallokationerlen:
         if pyomo.value(model.y[i]) == 1:
-            print(model.site_labels[i], 'is open and the following customers are serviced:')
-            for j in model.customers:
-                if pyomo.value(model.x[i, j]) > 0:
-                    print(model.customer_labels[j], "(", pyomo.value(model.x[i, j])*100, "%)", end=',')
+            print(model.antallokationerlen[i], 'is open and the following customers are serviced:')
+            for j in model.antalkunderlen:
+                if pyomo.value(model.x[i, j]) ==1:
+                    print(model.antalkunderlen[j], "(", pyomo.value(model.x[i, j])*100, "%)", end=',')
             print('\n')
 
 
@@ -95,5 +98,5 @@ def main(instance_file_name):
 
 
 if __name__ == '__main__':
-    instance_file_name = 'cflpData'
+    instance_file_name = 'SSCFLP_deterministic_data'
     main(instance_file_name)

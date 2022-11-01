@@ -28,18 +28,19 @@ def readData(filename: str) -> dict:
 
 def buildModel(data: dict) -> pyomo.ConcreteModel():
     model = pyomo.ConcreteModel()
-    model.period_labels = data['periods']
+    model.period_labels = data['periodsNy']
     model.product_names = data['products']
     model.periods = range(0, len(model.period_labels))
     model.products = range(0, len(model.product_names))
     model.periods_and_zero = range(-1, len(model.period_labels))
     model.periodsIncludingPast = range(-2, len(model.period_labels)) # OBS: Given positive lead time, we need to include knowledge of past orders/productions
-    model.demands = data['demands']
-    model.p = data['var_cost']
+    model.demands = data['demandsNyNy']
+    model.p = data['var_costNyNy']
     model.q = data['fixed_cost']
-    model.h = data['inv_cost']
+    model.h = data['inv_costNyNy']
     model.batch = data['batch_sizes']
     model.primoInv = data['primoInventory']
+    model.primoInvNy=data["primoInventoryNyNy"]
     model.leadTime = data['leadTimes']
     model.r = data['r']
     model.maxInv=data["max_inv"]
@@ -53,21 +54,34 @@ def buildModel(data: dict) -> pyomo.ConcreteModel():
     model.s = pyomo.Var(model.products, model.periods_and_zero, within=pyomo.NonNegativeIntegers)
 
     # Add objective function
-    model.obj=pyomo.Objective(expr=sum(model.p[k][t]*model.batch[k]*model.x[k,t]+model.q[k][t]*model.y[k,t]+model.h[k][t]*model.s[k,t] for k in model.products for t in model.periods))
+    model.obj=pyomo.Objective(expr=sum(model.p[k][t]*model.batch[k]*model.x[k,t]
+                                       +model.q[k][t]*model.y[k,t]
+                                       +model.h[k][t]*model.s[k,t] for k in model.products for t in model.periods))
     # Fix past x-variables to zero
-    for k in model.products:
-        model.x[k, -2].fix(0)
-        model.x[k, -1].fix(0)
+    model.x[0, -2].fix(7475)
+    model.x[0, -1].fix(16566)
+    model.x[1, -2].fix(2155)
+    model.x[1, -1].fix(0)
+    model.x[2, -1].fix(0)
+    model.x[3, -1].fix(107700)
+    model.x[4, -1].fix(27700)
+
     # Add flow conservation constraints
     model.flow_constraint=pyomo.ConstraintList()
     for t in model.periods:
         for k in model.products:
-            model.flow_constraint.add(expr=model.s[k,t-1]+model.batch[k]*model.x[k,t-model.leadTime[k]]==model.demands[k][t]+sum(model.r[l][k]*model.batch[l]*model.x[l,t] for l in model.products)+model.s[k,t])
+            model.flow_constraint.add(
+                expr=model.s[k,t-1]+model.batch[k]*model.x[k,t-model.leadTime[k]]==
+                     model.demands[k][t]
+                     +sum(model.r[l][k]*model.batch[l]*model.x[l,t] for l in model.products)
+                     +model.s[k,t])
+
     # Add the indicator constraints
     model.indicators=pyomo.ConstraintList()
     for k in model.products:
         for t in model.periods:
             model.indicators.add(expr=model.x[k,t]<=model.bigM[k]*model.y[k,t])
+
     # Set max size on production and inventory (in one go)
     model.sharedResources = pyomo.ConstraintList()
     for t in model.periods:
@@ -75,12 +89,12 @@ def buildModel(data: dict) -> pyomo.ConcreteModel():
         model.sharedResources.add(expr=sum(model.lagerForbrug[k]*model.s[k, t] for k in model.products) <= data['max_inv'])
     # Fix the primo inventory
     for k in model.products:
-        model.s[k, -1].fix(model.primoInv[k])
+        model.s[k, 0].fix(model.primoInvNy[k])
     return model
 
 def solveModel(model: pyomo.ConcreteModel()):
     # Define a solver
-    solver = pyomo.SolverFactory('gurobi')
+    solver = pyomo.SolverFactory('cplex')
     # Solve the model
     solver.solve(model, tee=True)
 
@@ -92,7 +106,23 @@ def displaySolution(model: pyomo.ConcreteModel()):
     # Position of bars on x-axis
     pos = np.arange(numPeriods)
 
+    print("")
+    print("Lagerniveauer for de forskellige produkter:")
+    for k in model.products:
+        s_values = [pyomo.value(model.s[k, t]) for t in model.periods]
+        print(model.product_names[k],s_values)
 
+    print("")
+    print("Produktionstal for de forskellige produkter:")
+    for k in model.products:
+        x_values = [model.batch[k]*pyomo.value(model.x[k,t]) for t in model.periods]
+        print(model.product_names[k], x_values)
+
+    #print("")
+    #print("Efterspørgselstal/forbrugstal for de forskellige produkter:")
+    #for k in model.products:
+        #demands = [model.demands[k][t] + sum(model.batch[k] * model.r[l][k] * pyomo.value(model.x[k, t]) for l in model.products) for t in model.periods]
+        #print(model.product_names[k],demands)
 
     plt.figure(1)
     # For each product, plot the production plan
@@ -101,10 +131,11 @@ def displaySolution(model: pyomo.ConcreteModel()):
         # Extract the optimal variable values
         s_values = [pyomo.value(model.s[k,t]) for t in model.periods]
         x_values = [model.batch[k]*pyomo.value(model.x[k,t]) for t in model.periods]
+        demands = [model.demands[k][t] + sum(model.batch[k]*model.r[l][k]*pyomo.value(model.x[k, t] )for l in model.products) for t in model.periods]
         # Width of a bar
         width = 0.4
         # Add the three plots to the fig-figure
-        plt.bar(pos, model.demands[k], width, label='Demands', color='blue')
+        plt.bar(pos, demands, width, label='Demand '+ model.product_names[k], color='blue')
         plt.bar(pos + width, s_values, width, label='Inventory level', color='grey')
         plt.plot(pos, x_values, color='darkred', label='Production level')
         # Set the ticks on the x-axis
@@ -118,11 +149,14 @@ def displaySolution(model: pyomo.ConcreteModel()):
     # Labels on axis
     plt.xlabel('Periods to plan')
     plt.ylabel(model.product_names[k])
-    plt.legend()
+
 
 
     # Show the figure
     plt.show()
+
+
+
 
 
 def main(filename: str):
