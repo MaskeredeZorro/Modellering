@@ -89,7 +89,7 @@ def buildModel(data: dict) -> pyomo.ConcreteModel():
 
 def solveModel(model: pyomo.ConcreteModel()):
     # Define a solver
-    solver = pyomo.SolverFactory('cplex')
+    solver = pyomo.SolverFactory('gurobi')
     # Solve the model
     solver.solve(model, tee=True)
 

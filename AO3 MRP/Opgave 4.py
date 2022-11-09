@@ -91,7 +91,7 @@ def buildModel(data: dict) -> pyomo.ConcreteModel():
 
 def solveModel(model: pyomo.ConcreteModel()):
     # Define a solver
-    solver = pyomo.SolverFactory('cplex')
+    solver = pyomo.SolverFactory('gurobi')
     # Solve the model
     solver.solve(model, tee=True)
 
@@ -115,11 +115,11 @@ def displaySolution(model: pyomo.ConcreteModel()):
         x_values = [model.batch[k]*pyomo.value(model.x[k,t]) for t in model.periods]
         print(model.product_names[k], x_values)
 
-    #print("")
-    #print("Efterspørgselstal/forbrugstal for de forskellige produkter:")
-    #for k in model.products:
-        #demands = [model.demands[k][t] + sum(model.batch[k] * model.r[l][k] * pyomo.value(model.x[k, t]) for l in model.products) for t in model.periods]
-        #print(model.product_names[k],demands)
+    print("")
+    print("Efterspørgselstal/forbrugstal for de forskellige produkter:")
+    for k in model.products:
+        demands = [model.demands[k][t] + sum(model.batch[k] * model.r[l][k] * pyomo.value(model.x[k, t]) for l in model.products) for t in model.periods]
+        print(model.product_names[k],demands)
 
     plt.figure(1)
     # For each product, plot the production plan
