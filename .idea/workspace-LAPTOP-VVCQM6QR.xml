@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="04fcd6e3-eb21-48bb-ad9b-0ec325cf98b2" name="Changes" comment="Initial push">
+      <change afterPath="$PROJECT_DIR$/Caseopgave/Opgave 5.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Caseopgave/Opgave 7.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Caseopgave/Opgave 1.py" beforeDir="false" afterPath="$PROJECT_DIR$/Caseopgave/Opgave 1.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$USER_HOME$/AppData/Local/Programs/Python/Python310/Lib/site-packages/pyomo/common/deprecation.py" root0="FORCE_HIGHLIGHTING" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2G7tDzxRqi762xE5wpJgDMNwZXN" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "last_opened_file_path": "C:/Users/alexa/OneDrive - Aarhus universitet/Skrivebord/PycharmProjects/Caseopgave",
+    "settings.editor.selected.configurable": "org.jetbrains.plugins.github.ui.GithubSettingsConfigurable"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\alexa\OneDrive - Aarhus universitet\Skrivebord\PycharmProjects\Caseopgave" />
+      <recent name="C:\Users\alexa\OneDrive - Aarhus Universitet\Skrivebord\PycharmProjects\AO3 MRP" />
+      <recent name="C:\Users\alexa\OneDrive - Aarhus Universitet\Skrivebord\PycharmProjects\AO2 Location-Allocation" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="04fcd6e3-eb21-48bb-ad9b-0ec325cf98b2" name="Changes" comment="" />
+      <created>1665751334657</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1665751334657</updated>
+    </task>
+    <task id="LOCAL-00001" summary="Initial push">
+      <created>1666606297961</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1666606297961</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Initial push">
+      <created>1666680055870</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1666680055870</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Initial push">
+      <created>1666680187699</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1666680187699</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Initial push">
+      <created>1666681540968</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1666681540968</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Initial push">
+      <created>1666684674770</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1666684674770</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Initial push">
+      <created>1666857327131</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1666857327131</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Initial push">
+      <created>1667290565231</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1667290565231</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="Initial push" />
+    <option name="LAST_COMMIT_MESSAGE" value="Initial push" />
+  </component>
+</project>
