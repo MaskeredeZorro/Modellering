@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt     # Used to plot the instance
 import numpy as np                  # Used for calculating distances
 import readAndWriteJson as rwJson   # Used to read data from Json file
 
+#testprogram
 #-------------------------------------------------#
 #Her ønsker vi at lave en lokationsbaseret clustering.
 #Vi ønsker her at minimere summen af afstandene mellem dataobjekterne og deres repræsentanter.
