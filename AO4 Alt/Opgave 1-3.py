@@ -4,26 +4,8 @@ import numpy as np                  # Used for calculating distances
 import readAndWriteJson as rwJson   # Used to read data from Json file
 
 
-#----------------------------------------------#
-#MinMax Lokationsbaseret Clustering
-#Her ønsker vi at minimere den maksimale afstand fra et dataobjekt til en (dens) repræsentant
-
-def makeLpNormDistanceMatrix(data: dict, p: int) -> list:
-    points = np.column_stack((data['Murder'], data['Assault'],data["UrbanPop"],data["Rape"]))
-    nrPoints = len(data['State'])
-    dist = []
-    for i in range(0, nrPoints):
-        dist.append([])
-        for j in range(0, nrPoints):
-            dist[i].append(np.linalg.norm(points[i] - points[j], p))
-    return dist
-
-
 def readData(clusterData: str) -> dict():
     data = rwJson.readJsonFileToDictionary(clusterData)
-    data['nrPoints'] = len(data['State'])
-    data['dist'] = makeEuclideanDistanceMatrix(data)
-    # data['dist'] = makeLpNormDistanceMatrix(data,2)
     return data
 
 
@@ -31,18 +13,24 @@ def buildModel(data: dict) -> pyomo.ConcreteModel():
     # Create model
     model = pyomo.ConcreteModel()
     # Copy data to model object
-    model.nrPoints = data['nrPoints']
-    model.points = range(0, data['nrPoints'])
-    model.xCoordinates = data['Murder']
-    model.yCoordinates = data['Assault']
-    model.zCoordinates = data['UrbanPop']
-    model.wCoordinates = data['Rape']
+    model.nrPoints = len(data['punkter'])
+    model.points = range(0, len(data['punkter']))
+    model.xCoordinates = data['x']
+    model.yCoordinates = data['y']
     model.dist = data['dist']
     model.k=data["k"]
     # Define variables
     model.y=pyomo.Var(model.points, within=pyomo.Binary)
     model.x=pyomo.Var(model.points, model.points, within=pyomo.Binary)
     model.rhoMax = pyomo.Var(within=pyomo.NonNegativeReals)
+
+    #Add objective funktion
+    model.obj=pyomo.Objective(expr=model.rhoMax,sense=pyomo.minimize)
+
+    model.y[0].fix(1)
+    model.y[1].fix(1)
+    model.y[2].fix(1)
+    model.y[3].fix(1)
 
     # Find den maksimale længde mellem dataobjektet og dets repræsentant
     model.maxdist = pyomo.ConstraintList()
@@ -53,8 +41,6 @@ def buildModel(data: dict) -> pyomo.ConcreteModel():
     for i in model.points:
             model.ekstracon2.add(expr=model.x[i,i]==model.y[i])
 
-    #Add objective funktion
-    model.obj=pyomo.Objective(expr=model.rhoMax,sense=pyomo.minimize)
 
     # Add "all must be represented" constraints
     #for at lave for all j skal vi lave et "forloop" da vi ønsker at tilføje en begrænsning for alle vores j'er
@@ -71,15 +57,15 @@ def buildModel(data: dict) -> pyomo.ConcreteModel():
     model.cardinality=pyomo.Constraint(expr=sum(model.y[i] for i in model.points)==model.k) #tilføjer en enkelt begrænsning
     return model
 
+
 def solveModel(model: pyomo.ConcreteModel()):
     # Set the solver
     solver = pyomo.SolverFactory('gurobi')
     # Solve the model
     solver.solve(model, tee=True)
 
-
 def displaySolution(model: pyomo.ConcreteModel()):
-    print('Optimal sum of distances in clusters:', pyomo.value(model.obj))
+    print('Optimal minimum of the maximal length: ', pyomo.value(model.obj))
     labels = [0] * model.nrPoints
     ptNumber = list(model.points)
     # Print the groups to promt and save coordinates for plotting
@@ -98,6 +84,7 @@ def displaySolution(model: pyomo.ConcreteModel()):
     plt.show()
 
 
+
 def main(clusterDataFile: str):
     data = readData(clusterDataFile)
     model = buildModel(data)
@@ -106,5 +93,5 @@ def main(clusterDataFile: str):
 
 
 if __name__ == '__main__':
-    theDataFile = "USarrests.json"
+    theDataFile = "datafile"
     main(theDataFile)

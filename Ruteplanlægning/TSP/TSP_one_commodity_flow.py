@@ -118,4 +118,4 @@ def main(filename: str):
 
 
 if __name__ == '__main__':
-    main('big_tsp_data')
+    main('bigger_tsp_data')
