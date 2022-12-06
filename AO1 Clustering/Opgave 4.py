@@ -22,8 +22,8 @@ def makeLpNormDistanceMatrix(data: dict, p: int) -> list:
 def readData(clusterData: str) -> dict():
     data = rwJson.readJsonFileToDictionary(clusterData)
     data['nrPoints'] = len(data['State'])
-    data['dist'] = makeEuclideanDistanceMatrix(data)
-    # data['dist'] = makeLpNormDistanceMatrix(data,2)
+    # data['dist'] = makeEuclideanDistanceMatrix(data)
+     data['dist'] = makeLpNormDistanceMatrix(data,2)
     return data
 
 
